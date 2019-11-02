@@ -1,1 +1,24 @@
 /* INIT FILE */
+.proyecto.maastricht-blue {
+  background-color: #1a1b3a !important;
+}
+
+.proyecto.mini-pink{
+  background-color: #F2D7EE !important;
+}
+
+.proyecto.imperial{
+  background-color: #69306D !important;
+}
+
+.proyecto.mountbatten-pink{
+  background-color: #A5668B !important;
+}
+
+.proyecto.pale-silver{
+  background-color: #D3BCC0 !important;
+}
+
+.mt-3-5{
+  margin-top: 3.5%;
+}
