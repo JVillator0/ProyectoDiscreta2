@@ -32,3 +32,9 @@ function calcularProbabilidad(casos){
   var seleccion = Math.floor(Math.random() * 100);
   return probabilidad[seleccion];
 }
+
+
+/**
+ * EL COLOR NEGRO ES DOMINANTE 
+ * 
+ */
