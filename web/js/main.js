@@ -1,22 +1,26 @@
 $( document ).ready(function() {
-    var casos = [
-      caso1 = {
-        nombre: "Caso 1",
-        probabilidad: 20,
-      },
-      caso2 = {
-        nombre: "Caso 2",
-        probabilidad: 30,
-      },
-      caso3 = {
-        nombre: "Caso 3",
-        probabilidad: 50,
-      },
-    ];
-    var caso_seleccionado = calcularProbabilidad(casos);
-    console.log(caso_seleccionado);
+    $('select').formSelect();
+    obtenerCaso();
 });
 
+function obtenerCaso(){
+  var casos = [
+    caso1 = {
+      nombre: "Caso 1",
+      probabilidad: 5,
+    },
+    caso2 = {
+      nombre: "Caso 2",
+      probabilidad: 45,
+    },
+    caso3 = {
+      nombre: "Caso 3",
+      probabilidad: 50,
+    },
+  ];
+  var caso_seleccionado = calcularProbabilidad(casos);
+  console.log(caso_seleccionado);
+}
 
 function calcularProbabilidad(casos){
   var probabilidad = [];
