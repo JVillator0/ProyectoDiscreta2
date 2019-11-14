@@ -21,6 +21,8 @@ var app = new Vue({
             var calle = {identidad: 'calle', imagen: null, bg: 'calle.png'};
             var arriba = {identidad: 'parqueo', imagen: null, bg: 'parqueo-arriba.png'};
 
+            var coche_abajo = {identidad: 'coche', imagen: 'coche-abajo.png', bg: 'parqueo-abajo.png'};
+
             for (let i = 0; i < 12; i++) {
                 this.$set(this.parqueos, Object.size(this.parqueos), abajo);
             }
@@ -34,7 +36,11 @@ var app = new Vue({
                 this.$set(this.parqueos, Object.size(this.parqueos), arriba);
             }
             this.$set(this.parqueos, Object.size(this.parqueos), calle);
-            
+
+            this.$set(this.parqueos, 1, coche_abajo);
+            this.$set(this.parqueos, 3, coche_abajo);
+            this.$set(this.parqueos, 6, coche_abajo);
+            this.$set(this.parqueos, 10, coche_abajo);
             
         },
 
