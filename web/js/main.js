@@ -1,40 +1,45 @@
-$( document ).ready(function() {
-    $('select').formSelect();
-    obtenerCaso();
-});
-
-function obtenerCaso(){
-  var casos = [
-    caso1 = {
-      nombre: "Caso 1",
-      probabilidad: 5,
-    },
-    caso2 = {
-      nombre: "Caso 2",
-      probabilidad: 45,
-    },
-    caso3 = {
-      nombre: "Caso 3",
-      probabilidad: 50,
-    },
-  ];
-  var caso_seleccionado = calcularProbabilidad(casos);
-  console.log(caso_seleccionado);
-}
-
-function calcularProbabilidad(casos){
-  var probabilidad = [];
-  casos.forEach(element => {
-    for (var i = 0; i < element.probabilidad; i++) {
-      probabilidad.push(element.nombre);
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
     }
-  });
-  var seleccion = Math.floor(Math.random() * 100);
-  return probabilidad[seleccion];
-}
+    return size;
+};
 
+var app = new Vue({
+    el: "#app",
+    data: {
+        simulacion_iniciada: false,
+        parqueos: {}
+    },
+    mounted() {
+        this.crearParqueo();
+    },
+    methods: {
+        crearParqueo: function(){
+            var abajo = {identidad: 'parqueo', imagen: null, bg: 'parqueo-abajo.png'};
+            var calle = {identidad: 'calle', imagen: null, bg: 'calle.png'};
+            var arriba = {identidad: 'parqueo', imagen: null, bg: 'parqueo-arriba.png'};
 
-/**
- * EL COLOR NEGRO ES DOMINANTE 
- * 
- */
+            for (let i = 0; i < 12; i++) {
+                this.$set(this.parqueos, Object.size(this.parqueos), abajo);
+            }
+            
+            for (let i = 0; i < 12; i++) {
+                this.$set(this.parqueos, Object.size(this.parqueos), calle);
+            }
+            
+            this.$set(this.parqueos, Object.size(this.parqueos), calle);
+            for (let i = 0; i < 10; i++) {
+                this.$set(this.parqueos, Object.size(this.parqueos), arriba);
+            }
+            this.$set(this.parqueos, Object.size(this.parqueos), calle);
+            
+            
+        },
+
+        verificar: function(identidad){
+            return identidad == 'coche';
+        },
+    },
+});
