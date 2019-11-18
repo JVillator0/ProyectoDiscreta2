@@ -10,8 +10,8 @@
 
     <title>TIRO AL BLANCO</title>
     <style type="text/css">
-      canvas {
-        border : solid 2px;
+      canvas {   
+           border : solid 2px;
       }
     </style>
   </head>
@@ -89,7 +89,11 @@
       var circle;
       var canvas = document.getElementById('myCanvas');
       var context = canvas.getContext('2d');
-      
+      var width = canvas.width;
+      var height = canvas.height;
+      var px = width/2;
+      var py = height/2;
+      canvas.w
       $(document).ready(function(){
         $('#mdl_inicio').modal('show');
         initCanvas();
@@ -143,7 +147,7 @@
             if(circulos[i-1] !=null){
               mdy = (circulos[i]-circulos[i-1])/2
             }
-            context.fillText(temp_arr_puntajes[i], 1200/2, (720/2)-circulos[i]+mdy);
+            context.fillText(temp_arr_puntajes[i], px, (py)-circulos[i]+mdy);
           }
           puntajes = temp_arr_puntajes;
           calcularProbabilidad();
@@ -158,11 +162,11 @@
       });
 
       function lanzarDardo(){
-        var x_min = (1200/2 - circulos[circulos.length-1]);
-        var x_max = (1200/2 + circulos[circulos.length-1]);
+        var x_min = (px - circulos[circulos.length-1]);
+        var x_max = (px + circulos[circulos.length-1]);
         
-        var y_min = (720/2 - circulos[circulos.length-1]);
-        var y_max = (720/2 + circulos[circulos.length-1]);
+        var y_min = (py - circulos[circulos.length-1]);
+        var y_max = (py + circulos[circulos.length-1]);
 
         do{
           var y = Math.random() * (y_max - y_min) + y_min;
@@ -177,7 +181,7 @@
       }
 
       function distanciaPuntos(x, y){
-        return Math.sqrt(Math.pow(x - 1200/2, 2) + Math.pow(y - 720/2, 2));
+        return Math.sqrt(Math.pow(x - px, 2) + Math.pow(y - py, 2));
       }
 
       function calcularProbabilidad(){
@@ -199,12 +203,8 @@
       }
       
       function drawCircle(mousePos){
-        var x = 1200; 
-        var y = 720; 
-        var px = x/2;
-        var py = y/2;
         var radio = Math.sqrt( Math.pow((mousePos.x-px),2) + Math.pow((mousePos.y-py),2));
-        if(radio <= 359){
+        if(radio <= py){
           contador_circulos++;
           
           circulos.push(radio);
