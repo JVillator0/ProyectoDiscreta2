@@ -106,7 +106,6 @@
 
       $("#btn_puntajes").on('click', function(){
         var temp_puntajes = $("#inpt_puntajes_circulos").val().trim();
-        console.log(temp_puntajes);
         var temp_arr_puntajes = temp_puntajes.split(",");
         if(temp_arr_puntajes.length == cantidad_circulos){
           $('#mdl_puntajes').modal('hide');
