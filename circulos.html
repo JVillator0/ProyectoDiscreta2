@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+    <style type="text/css">
+      canvas {
+        border : solid 2px;
+      }
+    </style>
+  <body >
+    <canvas id="myCanvas" width="1200" height="720" ></canvas>
+    <script>
+      function radianes(grados){
+        var radianes = (Math.PI/180)*grados;
+        return radianes;
+      }
+      var circle;
+      function getMousePos(canvas, evt) {
+        return {
+          x: evt.clientX,
+          y: evt.clientY
+        };
+      }
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+
+      canvas.addEventListener('click', function(evt) {
+        var mousePos = getMousePos(canvas, evt);
+        var x=1200; 
+        var y=720; 
+        var px = x/2;
+        var py = y/2;
+        var radio = Math.sqrt( Math.pow((mousePos.x-px),2) + Math.pow((mousePos.y-py),2)  );
+        circle.beginPath();
+        circle.arc(px,py,radio,0,radianes(360),true);
+        circle.stroke(); 
+      }, false);
+
+     (function(){
+         circle = canvas.getContext('2d');
+         // cuadricula tipo plano cartesiano
+         /* var x=1200; 
+          var y=720; 
+          var px = x/2;
+          var py = y/2;
+          context.moveTo(0,py);
+          context.lineTo(x,py);
+          context.moveTo(px,0);
+          context.lineTo(px,y);
+          for(var i=0;i<=x; i=i+15){
+            context.moveTo(i,py-10);
+            context.lineTo(i,py+10);
+          }
+          for(var i=0;i<=y; i=i+15){
+            context.moveTo(px-10,i);
+            context.lineTo(px+10,i);
+          }*/
+          context.lineWidth =2;
+          context.stroke();  
+        // circle.fillStyle ="rgba(163,208,244,0.5)";         
+      })();
+    </script>
+  </body>
+</html>
