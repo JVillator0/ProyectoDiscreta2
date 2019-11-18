@@ -1,62 +1,208 @@
-<!DOCTYPE HTML>
-<html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>TIRO AL BLANCO</title>
     <style type="text/css">
       canvas {
         border : solid 2px;
       }
     </style>
-  <body >
-    <canvas id="myCanvas" width="1200" height="720" ></canvas>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="1200" height="720" >
+
+    </canvas>
+
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-sm" id="mdl_inicio" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Datos iniciales</h5>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label>Cantidad de circulos a dibujar:</label>
+                <input type="text" class="form-control" id="inpt_num_circulos">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="btn_iniciar" class="btn btn-lg btn-primary">Aceptar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="mdl_puntajes" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Datos iniciales</h5>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label>Del circulo más grande al circulo más pequeño, digite separando por comas, los puntajes correspondientes:</label>
+                <input type="text" class="form-control" id="inpt_puntajes_circulos">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="btn_puntajes" class="btn btn-lg btn-primary">Aceptar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
     <script>
+      var cantidad_circulos = 0;
+      var contador_circulos = 0;
+      var circulos = [];
+      var puntajes = [];
+      var dibujar = true;
+
+      var circle;
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+      
+      $(document).ready(function(){
+        $('#mdl_inicio').modal('show');
+        initCanvas();
+      });
+
+      $("#btn_iniciar").on('click', function(){
+        var temp_cantidad_circulos = $("#inpt_num_circulos").val();
+        if(temp_cantidad_circulos != null && temp_cantidad_circulos != ''){
+          if(!isNaN(temp_cantidad_circulos)){
+            if(temp_cantidad_circulos > 1){
+              cantidad_circulos = temp_cantidad_circulos;
+              $('#mdl_inicio').modal('hide');
+            }else{
+              alert("Digite un numero mayor a 1");
+            }
+          }else{
+            alert("Digite un numero");
+          }
+        }else{
+            alert("Digite un valor");
+        }
+      });
+
+      $("#btn_puntajes").on('click', function(){
+        var temp_puntajes = $("#inpt_puntajes_circulos").val().trim();
+        console.log(temp_puntajes);
+        var temp_arr_puntajes = temp_puntajes.split(",");
+        if(temp_arr_puntajes.length == cantidad_circulos){
+          $('#mdl_puntajes').modal('hide');
+          
+          for (let i = circulos.length - 1; i >= 0; i--){
+            context.font = "15px Comic Sans MS";
+            console.log(i);
+            if((i%2)==0){
+              context.fillStyle = 'black';
+            }else{
+              context.fillStyle = 'white';
+            }
+            context.textAlign = "center";
+            context.fillText(temp_arr_puntajes[i], 1200/2, circulos[i]);
+          }
+
+        }else{
+          alert('La cantidad de puntajes no concuerda con la cantidad de circulos creados');
+        }
+      });
+
+      canvas.addEventListener('click', function(evt) {
+        if(dibujar){
+          var mousePos = getMousePos(canvas, evt);
+
+          mousePos.x -= 1;
+          mousePos.x -= 1;
+
+          drawCircle(mousePos);
+        }
+      }, false);
+      
+      function drawCircle(mousePos){
+        var x = 1200; 
+        var y = 720; 
+        var px = x/2;
+        var py = y/2;
+        var radio = Math.sqrt( Math.pow((mousePos.x-px),2) + Math.pow((mousePos.y-py),2));
+        if(radio <= 359){
+          contador_circulos++;
+          
+          circulos.push(radio);
+          circulos.sort(function(a, b){return a-b});
+
+          circle.beginPath();
+          circle.arc(px,py,radio,0,radianes(360),true);
+          circle.stroke();
+
+          if(contador_circulos >= cantidad_circulos){
+            dibujar = false;
+            $("#mdl_puntajes").modal('show');
+
+            for (let i = circulos.length - 1; i >= 0; i--) {
+              let tem_circle = circulos[i];
+              
+              circle.beginPath();
+              circle.arc(px,py, tem_circle , 0,radianes(360),true);
+              if(i == 0){ circle.fillStyle = 'red'; }else{
+                if((i%2)==0){
+                  circle.fillStyle = 'white';
+                }else{
+                  circle.fillStyle = 'black';
+                }
+              }
+              circle.fill();
+              circle.lineWidth = 1;
+              if(i == 0){ circle.strokeStyle = '#FF0202'; }else{
+                if((i%2)==0){
+                  circle.strokeStyle = '#FFF';
+                }else{
+                  circle.strokeStyle = '#000';
+                }
+              }
+              circle.stroke();
+            }
+          }
+        }
+      }
+
       function radianes(grados){
         var radianes = (Math.PI/180)*grados;
         return radianes;
       }
-      var circle;
+
       function getMousePos(canvas, evt) {
         return {
           x: evt.clientX,
           y: evt.clientY
         };
       }
-      var canvas = document.getElementById('myCanvas');
-      var context = canvas.getContext('2d');
 
-      canvas.addEventListener('click', function(evt) {
-        var mousePos = getMousePos(canvas, evt);
-        var x=1200; 
-        var y=720; 
-        var px = x/2;
-        var py = y/2;
-        var radio = Math.sqrt( Math.pow((mousePos.x-px),2) + Math.pow((mousePos.y-py),2)  );
-        circle.beginPath();
-        circle.arc(px,py,radio,0,radianes(360),true);
-        circle.stroke(); 
-      }, false);
-
-     (function(){
-         circle = canvas.getContext('2d');
-         // cuadricula tipo plano cartesiano
-         /* var x=1200; 
-          var y=720; 
-          var px = x/2;
-          var py = y/2;
-          context.moveTo(0,py);
-          context.lineTo(x,py);
-          context.moveTo(px,0);
-          context.lineTo(px,y);
-          for(var i=0;i<=x; i=i+15){
-            context.moveTo(i,py-10);
-            context.lineTo(i,py+10);
-          }
-          for(var i=0;i<=y; i=i+15){
-            context.moveTo(px-10,i);
-            context.lineTo(px+10,i);
-          }*/
-          context.lineWidth =2;
-          context.stroke();  
-        // circle.fillStyle ="rgba(163,208,244,0.5)";         
-      })();
+      function initCanvas(){
+        circle = canvas.getContext('2d');
+        context.lineWidth = 2;
+        context.stroke();
+      }
     </script>
   </body>
 </html>
