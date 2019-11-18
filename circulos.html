@@ -16,16 +16,19 @@
     </style>
   </head>
   <body>
-        <canvas id="myCanvas" width="1200" height="720" >
+    <canvas id="myCanvas" width="1200" height="720" >
 
-        </canvas>  
-    <div class="row">
-      <div class="container">
-        <div class="col-md-4">
-          <button type="button" class="btn btn-lg btn-primary" id="btn_lanzar" disabled>Lanzar dardo</button>
+    </canvas>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-2">
+          <button type="button" class="btn btn-lg btn-primary btn-block" id="btn_lanzar" disabled>Lanzar dardo</button>
+          <p id="count_clicks"><b>Clicks restantes:</b> <span id="count_clicks">0</span> </p>
         </div>
-        <div class="col-md-8" id="probabilidades">
+        <div class="col-md-10">
+          <div id="probabilidades">
 
+          </div>
         </div>
       </div>
     </div>
@@ -117,6 +120,7 @@
             if(temp_cantidad_circulos > 1){
               cantidad_circulos = temp_cantidad_circulos;
               $('#mdl_inicio').modal('hide');
+              $("#count_clicks").html(cantidad_circulos - contador_circulos);
             }else{
               alert("Digite un numero mayor a 1");
             }
@@ -135,7 +139,7 @@
           $('#mdl_puntajes').modal('hide');
           for (let i = circulos.length - 1; i >= 0; i--){
             
-            context.font = "10px Comic Sans MS";
+            context.font = "13px Comic Sans MS";
             if(((i+1)%2)==0){
               context.fillStyle = 'white';
             }else{
@@ -186,26 +190,34 @@
 
       function calcularProbabilidad(){
         var print = "";
+        var total_probabilidad = 0;
+        var total_porcentaje = 0;
+        var total_porcentaje_round = 0;
         var area_total = Math.PI*Math.pow(circulos[circulos.length-1],2);
         for (let i = 0; i < circulos.length; i++) {
           let area_anterior = (circulos[i-1] != undefined ? Math.PI*Math.pow(circulos[i-1],2) : 0);
           let area_actual = Math.PI*Math.pow(circulos[i],2);
-          let area_favorable = area_actual - area_anterior;
-          let probabilidad = area_favorable/area_total;
-          let porcentaje = probabilidad * 100;
-          print += "<b>"+porcentaje+"%</b> de obtener " + puntajes[i] + " puntos. <br>";
-        }
-        printProbabilidad(print);
-      }
+          let area_favorable = parseFloat(area_actual) - parseFloat(area_anterior);
+          let probabilidad = parseFloat(area_favorable)/parseFloat(area_total);
+          let porcentaje = parseFloat(probabilidad) * 100;
+          let porcentaje_round = parseFloat(porcentaje).toFixed(2);
+          print += "<b>"+porcentaje_round+"%</b> de obtener " + puntajes[i] + " puntos. <br>";
 
-      function printProbabilidad(probabilidad){
-        $("#probabilidades").append(probabilidad);
+          total_probabilidad += parseFloat(probabilidad);
+          total_porcentaje += parseFloat(porcentaje);
+          total_porcentaje_round += parseFloat(porcentaje_round);
+        }
+        print += "<b>Total: </b> "+total_porcentaje_round+"%";
+        $("#probabilidades").append(print);
       }
       
       function drawCircle(mousePos){
         var radio = Math.sqrt( Math.pow((mousePos.x-px),2) + Math.pow((mousePos.y-py),2));
         if(radio <= py){
           contador_circulos++;
+
+          $("#count_clicks").html(cantidad_circulos - contador_circulos);
+
           
           circulos.push(radio);
           circulos.sort(function(a, b){return a-b});
@@ -215,6 +227,7 @@
           circle.stroke();
 
           if(contador_circulos >= cantidad_circulos){
+            $("#count_clicks").remove();
             dibujar = false;
             $("#mdl_puntajes").modal('show');
 
