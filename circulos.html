@@ -16,10 +16,19 @@
     </style>
   </head>
   <body>
-    <canvas id="myCanvas" width="1200" height="720" >
+        <canvas id="myCanvas" width="1200" height="720" >
 
-    </canvas>
+        </canvas>  
+    <div class="row">
+      <div class="container">
+        <div class="col-md-4">
+          <button type="button" class="btn btn-lg btn-primary" id="btn_lanzar" disabled>Lanzar dardo</button>
+        </div>
+        <div class="col-md-8" id="resultados">
 
+        </div>
+      </div>
+    </div>
     <!-- Modal -->
     <div class="modal fade bd-example-modal-sm" id="mdl_inicio" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
       <div class="modal-dialog modal-sm">
@@ -52,7 +61,7 @@
           <div class="modal-body">
             <form>
               <div class="form-group">
-                <label>Del circulo más grande al circulo más pequeño, digite separando por comas, los puntajes correspondientes:</label>
+                <label><b>Del</b> circulo <b>más pequeño al</b> circulo <b>más grande</b>, digite separando por comas, los puntajes correspondientes:</label>
                 <input type="text" class="form-control" id="inpt_puntajes_circulos">
               </div>
             </form>
@@ -109,23 +118,53 @@
         var temp_arr_puntajes = temp_puntajes.split(",");
         if(temp_arr_puntajes.length == cantidad_circulos){
           $('#mdl_puntajes').modal('hide');
-          
           for (let i = circulos.length - 1; i >= 0; i--){
-            context.font = "15px Comic Sans MS";
-            console.log(i);
-            if((i%2)==0){
-              context.fillStyle = 'black';
-            }else{
+            context.font = "10px Comic Sans MS";
+            if(((i+1)%2)==0){
               context.fillStyle = 'white';
+            }else{
+              context.fillStyle = 'black';
             }
             context.textAlign = "center";
-            context.fillText(temp_arr_puntajes[i], 1200/2, circulos[i]);
+            context.fillText(temp_arr_puntajes[i], 1200/2, (720/2)-circulos[i]+20);
           }
-
+          $("#btn_lanzar").removeAttr("disabled");
         }else{
           alert('La cantidad de puntajes no concuerda con la cantidad de circulos creados');
         }
       });
+
+      $("#btn_lanzar").on('click', function(){
+        lanzarDardo();
+      });
+
+      function lanzarDardo(){
+        var x_min = (1200/2 - circulos[circulos.length-1]);
+        var x_max = (1200/2 + circulos[circulos.length-1]);
+        
+        var y_min = (720/2 - circulos[circulos.length-1]);
+        var y_max = (720/2 + circulos[circulos.length-1]);
+
+        do{
+          var y = Math.random() * (y_max - y_min) + y_min;
+          var x = Math.random() * (x_max - x_min) + x_min;
+        }while(distanciaPuntos(x, y) <= circulos[circulos.length - 1]);
+        
+        console.log(x+", "+y);
+
+        context.font = "10px Comic Sans MS";
+        context.fillStyle = 'blue';
+        context.textAlign = "center";
+        context.fillText("X", 1200/2 + x, 720/2 + y);
+      }
+
+      function distanciaPuntos(x, y){
+        return Math.sqrt(Math.pow(x - 1200/2, 2) + Math.pow(y - 720/2, 2));
+      }
+
+      function printResultados(resultados){
+        $("#resultados").append(resultados);
+      }
 
       canvas.addEventListener('click', function(evt) {
         if(dibujar){
