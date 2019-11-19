@@ -11,27 +11,28 @@
     <title>TIRO AL BLANCO</title>
     <style type="text/css">
       canvas {   
-           border : solid 2px;
+        border : solid 2px;
       }
     </style>
   </head>
   <body>
-    <canvas id="myCanvas" width="1200" height="720" >
-
+    <canvas id="myCanvas" width="1200" height="520">
+    
     </canvas>
+
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-2">
-          <button type="button" class="btn btn-lg btn-primary btn-block" id="btn_lanzar" disabled>Lanzar dardo</button>
-          <p id="count_clicks"><b>Clicks restantes:</b> <span id="count_clicks">0</span> </p>
+          <button type="button" class="btn btn-lg btn-danger btn-block" id="btn_lanzar" disabled>Lanzar dardo</button>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-4">
           <div id="probabilidades">
 
           </div>
         </div>
       </div>
     </div>
+    
     <!-- Modal -->
     <div class="modal fade bd-example-modal-sm" id="mdl_inicio" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
       <div class="modal-dialog modal-sm">
@@ -85,8 +86,10 @@
     <script>
       var cantidad_circulos = 0;
       var contador_circulos = 0;
-      var circulos = [];
+      var circulos = []; // circulos contiene el radio de cada circulo
       var puntajes = [];
+      var contador_puntajes = [];
+      var dardos_distancias = [];
       var dibujar = true;
 
       var circle;
@@ -96,7 +99,7 @@
       var height = canvas.height;
       var px = width/2;
       var py = height/2;
-      canvas.w
+
       $(document).ready(function(){
         $('#mdl_inicio').modal('show');
         initCanvas();
@@ -120,7 +123,6 @@
             if(temp_cantidad_circulos > 1){
               cantidad_circulos = temp_cantidad_circulos;
               $('#mdl_inicio').modal('hide');
-              $("#count_clicks").html(cantidad_circulos - contador_circulos);
             }else{
               alert("Digite un numero mayor a 1");
             }
@@ -137,9 +139,11 @@
         var temp_arr_puntajes = temp_puntajes.split(",");
         if(temp_arr_puntajes.length == cantidad_circulos){
           $('#mdl_puntajes').modal('hide');
+          //pintando los puntajes
           for (let i = circulos.length - 1; i >= 0; i--){
             
             context.font = "13px Comic Sans MS";
+
             if(((i+1)%2)==0){
               context.fillStyle = 'white';
             }else{
@@ -148,7 +152,9 @@
             context.textAlign = "center";
 
             var mdy=circulos[i];
-            if(circulos[i-1] !=null){
+            //Tomo el radio del circulo que esta leyendo y el siguiente
+            //entrela diferencia entre 2 y es la mitad, para poner el texto del puntaje en ese punto.
+            if(circulos[i-1] != null){
               mdy = (circulos[i]-circulos[i-1])/2
             }
             context.fillText(temp_arr_puntajes[i], px, (py)-circulos[i]+mdy);
@@ -166,10 +172,15 @@
       });
 
       function lanzarDardo(){
+        //lado negativo de las X
         var x_min = (px - circulos[circulos.length-1]);
+        //lado positivo de las X
         var x_max = (px + circulos[circulos.length-1]);
         
+        //lado negativo de las Y
         var y_min = (py - circulos[circulos.length-1]);
+        
+        //lado positivo de las Y
         var y_max = (py + circulos[circulos.length-1]);
 
         do{
@@ -178,10 +189,30 @@
           var distancia = distanciaPuntos(x, y);
         }while(circulos[circulos.length - 1] < distancia);
         
+        dardos_distancias.push(distancia);
+        contadorDardos();
+        
         context.font = "20px Comic Sans MS";
-        context.fillStyle = 'blue';
+        context.fillStyle = 'yellow';
         context.textAlign = "center";
         context.fillText("X", x, y);
+      }
+
+      function contadorDardos(){
+          for (let i = 0; i < circulos.length; i++) {
+            for (let j = 0; j < dardos_distancias.length; j++) {
+              var dardo = dardos_distancias[j];
+              var distancia_anterior = (circulos[i-1] != undefined ? circulos[i-1] : 0);
+              var distancia_actual = circulos[i]
+              if(distancia_actual > dardo && distancia_anterior < dardo){
+                if(contador_puntajes[i] != undefined){
+                  contador_puntajes[i]++;
+                }else{
+                  contador_puntajes[i] = 1;
+                }
+              }
+            }
+          }
       }
 
       function distanciaPuntos(x, y){
@@ -193,7 +224,9 @@
         var total_probabilidad = 0;
         var total_porcentaje = 0;
         var total_porcentaje_round = 0;
+        //area del circulo mas grande
         var area_total = Math.PI*Math.pow(circulos[circulos.length-1],2);
+        //para calcular la probabilidad de cada circulo
         for (let i = 0; i < circulos.length; i++) {
           let area_anterior = (circulos[i-1] != undefined ? Math.PI*Math.pow(circulos[i-1],2) : 0);
           let area_actual = Math.PI*Math.pow(circulos[i],2);
@@ -202,11 +235,11 @@
           let porcentaje = parseFloat(probabilidad) * 100;
           let porcentaje_round = parseFloat(porcentaje).toFixed(2);
           print += "<b>"+porcentaje_round+"%</b> de obtener " + puntajes[i] + " puntos. <br>";
-
           total_probabilidad += parseFloat(probabilidad);
           total_porcentaje += parseFloat(porcentaje);
           total_porcentaje_round += parseFloat(porcentaje_round);
         }
+        total_porcentaje_round = parseFloat(total_porcentaje_round).toFixed(2);
         print += "<b>Total: </b> "+total_porcentaje_round+"%";
         $("#probabilidades").append(print);
       }
@@ -216,10 +249,9 @@
         if(radio <= py){
           contador_circulos++;
 
-          $("#count_clicks").html(cantidad_circulos - contador_circulos);
-
-          
+          //agregando los radios de los circulos
           circulos.push(radio);
+          //ordenandolos de menor a mayor
           circulos.sort(function(a, b){return a-b});
 
           circle.beginPath();
@@ -227,15 +259,16 @@
           circle.stroke();
 
           if(contador_circulos >= cantidad_circulos){
-            $("#count_clicks").remove();
             dibujar = false;
             $("#mdl_puntajes").modal('show');
 
+            //para darle color a los circulos
             for (let i = circulos.length - 1; i >= 0; i--) {
-              let tem_circle = circulos[i];
+              let temp_circle = circulos[i];
               
               circle.beginPath();
-              circle.arc(px,py, tem_circle , 0,radianes(360),true);
+              circle.arc(px, py, temp_circle , 0, radianes(360),true);
+              //define los colores
               if(i == 0){ circle.fillStyle = 'red'; }else{
                 if((i%2)==0){
                   circle.fillStyle = 'white';
@@ -245,6 +278,7 @@
               }
               circle.fill();
               circle.lineWidth = 1;
+              //define los colores
               if(i == 0){ circle.strokeStyle = '#FF0202'; }else{
                 if((i%2)==0){
                   circle.strokeStyle = '#FFF';
@@ -259,8 +293,7 @@
       }
 
       function radianes(grados){
-        var radianes = (Math.PI/180)*grados;
-        return radianes;
+        return (Math.PI/180)*grados;
       }
 
       function getMousePos(canvas, evt) {
