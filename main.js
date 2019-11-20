@@ -124,13 +124,18 @@ function asignarPuntaje(){
     }
   }
 
-  print = "";
+  //este ya es solo para imprimir el texto
+  var print = "";
+  var puntos_global = 0;
   for (let g = 0; g < cont_puntajes.length; g++) {
     if(cont_puntajes[g] != undefined){
-      print += "<b>" + puntajes[g] + " punto "+ ( puntajes[g] == 1 ? "s" : "" ) +" </b> acertado: " + cont_puntajes[g] + " veces <br>";
+      let puntos_individual = parseFloat(puntajes[g])*parseFloat(cont_puntajes[g]);
+      puntos_global += puntos_individual;
+      print += "<b>" + puntajes[g] + " punto"+ ( puntajes[g] == 1 ? "" : "s" ) +" </b> acertado: " + cont_puntajes[g] + " " + (cont_puntajes[g] == 1 ? "vez" : "veces") + " ("+puntos_individual+" puntos)<br>";
     }
   }
   print += "<b>dardos lanzados: </b>" + dardos.length + "<br>" ;
+  print += "<b>total de puntos: </b>" + puntos_global + "<br>" ;
   $("#puntajes").html(print);
 }
 
