@@ -16,12 +16,21 @@ $(document).ready(function(){
   initCanvas();
 });
 
+var tooltipSpan = document.getElementById('tooltip-span');
+canvas.onmousemove = function (e) {
+    var x = e.clientX;
+    var y = e.clientY;
+    tooltipSpan.style.top = (y + 20) + 'px';
+    tooltipSpan.style.left = (x + 20) + 'px';
+};
+$(canvas).on("mousemove", function(event) {
+  var posible_radio = distanciaPuntos(event.pageX, event.pageY);
+  $("#tooltip-span").html("radio: " + parseFloat(posible_radio).toFixed(2) + " px");
+});
+
 canvas.addEventListener('click', function(evt) {
   if(dibujar){
     var mousePos = getMousePos(canvas, evt);
-
-    mousePos.x -= 1;
-    mousePos.x -= 1;
 
     drawCircle(mousePos);
   }
@@ -162,7 +171,7 @@ function calcularProbabilidad(){
     total_porcentaje += parseFloat(porcentaje);
     total_porcentaje_round += parseFloat(porcentaje_round);
   }
-  total_porcentaje_round = total_porcentaje_round.toFixed(2);
+  total_porcentaje_round = total_porcentaje_round.toFixed(0);
   print += "<b>Total: </b> "+total_porcentaje_round+"%";
   $("#probabilidades").append(print);
 }
@@ -182,15 +191,19 @@ function drawCircle(mousePos){
     circulos.push(radio);
     circulos.sort(function(a, b){return a-b});
 
+    mostrarRadios();
+
     circle.beginPath();
     circle.arc(px,py,radio,0,radianes(360),true);
     circle.stroke();
 
     if(contador_circulos >= cantidad_circulos){
       $("#cont_clicks").remove();
-      dibujar = false;
+      $("#tooltip-span").remove();
       $("#mdl_puntajes").modal('show');
 
+      dibujar = false;
+      
       for (let i = circulos.length - 1; i >= 0; i--) {
         let tem_circle = circulos[i];
         
@@ -212,10 +225,19 @@ function drawCircle(mousePos){
             circle.strokeStyle = '#000';
           }
         }
+        
         circle.stroke();
       }
     }
   }
+}
+
+function mostrarRadios(){
+  var print = "";
+  for (let i = 0; i < circulos.length; i++) {
+    print += "<b>Radio del circulo #" + (i+1) + ":</b> " + parseFloat(circulos[i]).toFixed(2) + " Px <br>";
+  }
+  $("#radios").html(print);
 }
 
 function radianes(grados){
